@@ -35,7 +35,7 @@ updt() {
     rm -f /data/adb/box/bin/box.zip
     log info "Done :)"
     sleep 3
-    adb shell am force-stop xyz.chz.bfm
+    killall -9 xyz.chz.bfm
 }
 
 case "$1" in
