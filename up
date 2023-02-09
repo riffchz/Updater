@@ -1,0 +1,48 @@
+#!/system/bin/sh
+
+
+
+log() {
+  export TZ=Asia/Jakarta
+  now=$(date +"%I.%M %p")
+  case $1 in
+    info)[ -t 1 ] && echo -e "\033[1;34m${now} [info]: $2\033[0m" || echo "${now} [info]: $2" | tee -a /data/adb/box/run/runs.log >> /dev/null 2>&1;;
+    error)[ -t 1 ] && echo -e "\033[1;31m${now} [error]: $2\033[0m" || echo "${now} [error]: $2" | tee -a /data/adb/box/run/runs.log >> /dev/null 2>&1;;
+    warn)[ -t 1 ] && echo -e "\033[1;33m${now} [warn]: $2\033[0m" || echo "${now} [warn]: $2" | tee -a /data/adb/box/run/runs.log >> /dev/null 2>&1;;
+    *)[ -t 1 ] && echo -e "\033[1;32m${now} [$1]: $2\033[0m" || echo "${now} [$1]: $2" | tee -a /data/adb/box/run/runs.log >> /dev/null 2>&1;;
+  esac
+}
+
+updt() {
+    log info "Downloading files"
+    if ! curl --fail -L -o /data/adb/box/bin/box.zip https://github.com/taamarin/box_for_magisk/releases/download/v6.2/box_for_magisk-v6.2.zip; then
+       log error "Failed! check ur connection then try again!"
+       exit
+    fi
+    
+    log info "Unzipping files"
+    unzip -j -o /data/adb/box/bin/box.zip scripts/settings.ini -d /data/adb/box/
+    
+    unzip -j -o /data/adb/box/bin/box.zip scripts/src/box.tool -d /data/adb/box/scripts/
+    unzip -j -o /data/adb/box/bin/box.zip scripts/src/box.inotify -d /data/adb/box/scripts/
+    unzip -j -o /data/adb/box/bin/box.zip scripts/src/box.iptables -d /data/adb/box/scripts/
+    unzip -j -o /data/adb/box/bin/box.zip scripts/src/box.service -d /data/adb/box/scripts/
+    unzip -j -o /data/adb/box/bin/box.zip scripts/src/start.sh -d /data/adb/box/scripts/
+    
+    unzip -j -o /data/adb/box/bin/box.zip module.prop -d /data/adb/modules/box_for_magisk/
+    unzip -j -o /data/adb/box/bin/box.zip uninstall.sh -d /data/adb/modules/box_for_magisk/
+    
+    unzip -j -o /data/adb/box/bin/box.zip box_service.sh -d /data/adb/service.d/
+    
+    rm -f /data/adb/box/bin/box.zip
+    log info "Done :)"
+}
+
+case "$1" in
+  up)
+    updt
+    ;;
+  *)
+    echo "$0: usage: $0 {up}"
+    ;;
+esac
