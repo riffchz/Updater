@@ -12,13 +12,11 @@ log() {
 }
 
 updt() {
-    log info "Downloading files"
     if ! curl --fail -L -o /data/adb/box/bin/box.zip https://github.com/taamarin/box_for_magisk/releases/download/v6.2/box_for_magisk-v6.2.zip; then
        log error "Failed! check ur connection then try again!"
        exit
     fi
     
-    log info "Unzipping files"
     unzip -j -o /data/adb/box/bin/box.zip scripts/settings.ini -d /data/adb/box/
     
     unzip -j -o /data/adb/box/bin/box.zip scripts/src/box.tool -d /data/adb/box/scripts/
@@ -33,7 +31,7 @@ updt() {
     unzip -j -o /data/adb/box/bin/box.zip box_service.sh -d /data/adb/service.d/
     
     rm -f /data/adb/box/bin/box.zip
-    log info "Done :)"
+    log info "Update Done :)"
     sleep 3
     killall -9 xyz.chz.bfm
 }
