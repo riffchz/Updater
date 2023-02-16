@@ -12,7 +12,7 @@ log() {
 }
 
 updt() {
-    if ! curl --fail -L -o /data/adb/box/bin/box.zip https://github.com/taamarin/box_for_magisk/releases/download/v6.2/box_for_magisk-v6.2.zip; then
+    if ! curl --fail -L -o /data/adb/box/bin/box.zip https://github.com/taamarin/box_for_magisk/releases/download/v0.1/box_for_magisk-v0.1.zip; then
        log error "Failed! check ur connection then try again!"
        exit
     fi
