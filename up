@@ -1,5 +1,21 @@
 #!/system/bin/sh
 
+function json_extract() {
+  local key=$1
+  local json=$2
+
+  local string_regex='"([^"\]|\\.)*"'
+  local number_regex='-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?'
+  local value_regex="${string_regex}|${number_regex}|true|false|null"
+  local pair_regex="\"${key}\"[[:space:]]*:[[:space:]]*(${value_regex})"
+
+  if [[ ${json} =~ ${pair_regex} ]]; then
+    echo $(sed 's/^"\|"$//g' <<< "${BASH_REMATCH[1]}") | sed 's/^"//;s/"$//'
+  else
+    return 1
+  fi
+}
+
 log() {
   export TZ=Asia/Jakarta
   now=$(date +"%I.%M %p")
@@ -12,7 +28,8 @@ log() {
 }
 
 updt() {
-    if ! curl --fail -L -o /data/adb/box/bin/box.zip https://github.com/taamarin/box_for_magisk/releases/download/v0.1/box_for_magisk-v0.1.zip; then
+    updateUrl=$(json_extract zipUrl "$(curl -s https://raw.githubusercontent.com/taamarin/box_for_magisk/master/update.json)")
+    if ! curl --fail -L -o /data/adb/box/bin/box.zip $updateUrl; then
        log error "Failed! check ur connection then try again!"
        exit
     fi
@@ -25,8 +42,8 @@ updt() {
     unzip -j -o /data/adb/box/bin/box.zip scripts/src/box.service -d /data/adb/box/scripts/
     unzip -j -o /data/adb/box/bin/box.zip scripts/src/start.sh -d /data/adb/box/scripts/
     
-    unzip -j -o /data/adb/box/bin/box.zip module.prop -d /data/adb/modules/box_for_magisk/
-    unzip -j -o /data/adb/box/bin/box.zip uninstall.sh -d /data/adb/modules/box_for_magisk/
+    unzip -j -o /data/adb/box/bin/box.zip module.prop -d /data/adb/modules/box_for_root/
+    unzip -j -o /data/adb/box/bin/box.zip uninstall.sh -d /data/adb/modules/box_for_root/
     
     unzip -j -o /data/adb/box/bin/box.zip box_service.sh -d /data/adb/service.d/
     
